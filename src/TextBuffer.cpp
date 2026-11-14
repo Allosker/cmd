@@ -22,6 +22,36 @@ const std::string TextBuffer::get_format() const noexcept
 	return str;
 }
 
+void TextBuffer::move_cursor(v2i32 offset) noexcept
+{
+	m_cursor += offset;
+
+	if (offset.x != 0)
+	{
+		if (m_cursor.y > 0 && m_cursor.x < 0)
+		{
+			m_cursor.y--;
+			m_cursor.x = m_grid_size.x - 1;
+		}
+		else if (m_cursor.y == 0 && m_cursor.x < 0)
+			m_cursor.x = 0;
+
+		if (m_cursor.x >= m_grid_size.x)
+		{
+			move_cursor({ m_cursor.x - m_grid_size.x, 0 });
+			m_cursor.y++;
+			m_cursor.x = 0;
+		}
+	}
+	else if (offset.y != 0)
+	{
+		if (m_cursor.y < 0)
+			m_cursor.y = 0;
+	}
+
+	m_change++;
+}
+
 void TextBuffer::add(i8 c) noexcept
 {
 	if (!m_format.size())

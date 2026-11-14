@@ -35,6 +35,9 @@ public:
 
 	u8 get_change_count() const noexcept { return m_change; }
 
+	v2i32 get_cursor() const noexcept { return m_cursor; }
+
+	void move_cursor(v2i32 offset) noexcept;
 
 	template<typename... Types>
 	void add(std::format_string<Types...> fmt, Types&&... args) noexcept;
@@ -60,6 +63,8 @@ private:
 	/// Size of the grid in characters
 	/// </summary>
 	v2i32 m_grid_size{ 120, 30 };
+
+	v2i32 m_cursor{};
 
 	u8 m_change{};
 };
