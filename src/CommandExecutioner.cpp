@@ -84,10 +84,11 @@ std::string CommandExecutioner::run_commands(sf::Window& window) noexcept
 {
 	std::string ret{};
 
-	if (m_command.name == "exit") ret = cmd::exit(window);
+	if (m_command.name == "help") ret = cmd::help(m_command.args);
+	else if (m_command.name == "exit") ret = cmd::exit(window);
 	else if (m_command.name == "power") ret = cmd::power(m_command.args);
 	else if (m_command.name == "terminate") ret = cmd::terminate();
-	else if (m_command.name == "cd") ret = m_command.args[0];
+	else if (m_command.name == "cd") ret = cmd::cd(m_command.args);
 
 	m_command = {};
 	return ret;

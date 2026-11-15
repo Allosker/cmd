@@ -16,6 +16,7 @@ namespace cmd
 	/// </summary>
 	static const std::unordered_map<std::string, std::unordered_set<std::string>> g_commands
 	{
+		{ "help", {} },
 		{ "exit", {} },
 		{ "terminate", {} },
 		{ "cd", {"__str__"} },
@@ -33,5 +34,10 @@ namespace cmd
 	std::string exit(sf::Window& window) noexcept;
 
 	std::string terminate() noexcept;
+
+	std::string cd(Args args) noexcept;
+
+	std::string help(Args args) noexcept;
+
 
 }

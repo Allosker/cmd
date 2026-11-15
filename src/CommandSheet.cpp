@@ -83,6 +83,16 @@ namespace cmd
 		return "Terminating Program";
 	}
 
+	std::string cd(Args args) noexcept
+	{
+		return "Not yet done";
+	}
+
+	std::string help(Args args) noexcept
+	{
+		return "Not yet done";
+	}
+
 
 
 }
