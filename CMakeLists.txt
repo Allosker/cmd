@@ -37,7 +37,12 @@ file (GLOB_RECURSE LIB_FILES CMAKE_CONFIGURE_DEPENDS
 
 # include/src directories
 
-add_executable(cmd ${C_CXX_FILES} ${H_HXX_FILES} ${LIB_FILES} )
+add_executable(cmd 
+${C_CXX_FILES} 
+${H_HXX_FILES} 
+${LIB_FILES} 
+"assets/resource.rc"
+)
 target_include_directories(cmd PUBLIC ${SRC_DIR})
 target_include_directories(cmd PUBLIC ${LIB_DIR})
 
