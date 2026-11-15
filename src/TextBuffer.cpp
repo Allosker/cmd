@@ -119,6 +119,17 @@ void TextBuffer::add(i8 c) noexcept
 	m_change++;
 }
 
+void TextBuffer::add(const std::string& str) noexcept
+{
+	for (const auto i : str)
+	{
+		add(i);
+		if (m_entry_mode)
+			m_buffer += i;
+	}
+	m_change++;
+}
+
 void TextBuffer::carriage_return() noexcept
 {
 	add('\n');

@@ -36,6 +36,7 @@ TerminalWindow::TerminalWindow() noexcept
 
 	SetWindowRgn(hwnd, region, true);
 
+	m_window.setFramerateLimit(40);
 }
 
 void TerminalWindow::manage_events() noexcept
@@ -50,45 +51,59 @@ void TerminalWindow::manage_events() noexcept
 			if (key->scancode == sf::Keyboard::Scancode::Escape)
 				m_window.close();
 
-			if (key->scancode == sf::Keyboard::Scancode::LControl ||
-				key->scancode == sf::Keyboard::Scancode::RControl)
-				m_kb_mode |= KeyboardMode::Control;
-
-			if (key->scancode == sf::Keyboard::Scancode::LShift ||
-				key->scancode == sf::Keyboard::Scancode::RShift)
-				m_kb_mode |= KeyboardMode::Shift;
-
-
-			if (key->scancode == sf::Keyboard::Scancode::Enter)
 			{
-				if (m_kb_mode & KeyboardMode::Control)
-					m_text_buffer.carriage_return();
-				else
-				// Compute user commands
+				if (m_window.hasFocus())
+					if (key->scancode == sf::Keyboard::Scancode::LControl ||
+						key->scancode == sf::Keyboard::Scancode::RControl)
+						m_kb_mode |= KeyboardMode::Control;
+
+				if (key->scancode == sf::Keyboard::Scancode::LShift ||
+					key->scancode == sf::Keyboard::Scancode::RShift)
+					m_kb_mode |= KeyboardMode::Shift;
+
+
+				if (key->scancode == sf::Keyboard::Scancode::Enter)
 				{
-					m_text_buffer.enter();
+					if (m_kb_mode & KeyboardMode::Control)
+						m_text_buffer.carriage_return();
+					else
+						// Compute user commands
+					{
+						m_text_buffer.enter();
+
+						if (auto err = m_commands_executioner.parse(m_text_buffer.get_UserInput_buffer()); err != "")
+						{
+							m_text_buffer.add(err);
+							m_text_buffer.enter();
+						}
+						else
+						{
+							m_text_buffer.add(m_commands_executioner.run_commands(m_window));
+							m_text_buffer.enter();
+						}
+					}
 				}
+
+				if (key->scancode == sf::Keyboard::Scancode::Delete ||
+					key->scancode == sf::Keyboard::Scancode::Backspace
+					)
+				{
+					m_text_buffer.erase();
+				}
+
+
+				if (key->scancode == sf::Keyboard::Scancode::Right)
+					m_text_buffer.move_cursor({ 1, 0 });
+
+				if (key->scancode == sf::Keyboard::Scancode::Left)
+					m_text_buffer.move_cursor({ -1, 0 });
+
+				if (key->scancode == sf::Keyboard::Scancode::Up)
+					m_text_buffer.move_cursor({ 0, -1 });
+
+				if (key->scancode == sf::Keyboard::Scancode::Down)
+					m_text_buffer.move_cursor({ 0, 1 });
 			}
-
-			if (key->scancode == sf::Keyboard::Scancode::Delete ||
-				key->scancode == sf::Keyboard::Scancode::Backspace
-				)
-			{
-				m_text_buffer.erase();
-			}
-
-
-			if (key->scancode == sf::Keyboard::Scancode::Right)
-				m_text_buffer.move_cursor({ 1, 0 });
-
-			if (key->scancode == sf::Keyboard::Scancode::Left)
-				m_text_buffer.move_cursor({ -1, 0 });
-
-			if (key->scancode == sf::Keyboard::Scancode::Up)
-				m_text_buffer.move_cursor({ 0, -1 });
-
-			if (key->scancode == sf::Keyboard::Scancode::Down)
-				m_text_buffer.move_cursor({ 0, 1 });
 
 		}
 
@@ -126,21 +141,21 @@ void TerminalWindow::manage_events() noexcept
 				m_drag_window = false;
 		}
 
-
-		if (auto key = event->getIf<sf::Event::TextEntered>())
-		{
-			if ((key->unicode > 0x001F /*escape characters sequence*/ || (key->unicode < 0x007E && key->unicode > 0x00A0)) ||
-				// exceptions  
-				key->unicode == 0x0009 // horizontal tab
-				)
-				// printable characters range
+		if (m_window.hasFocus())
+			if (auto key = event->getIf<sf::Event::TextEntered>())
 			{
-				if (key->unicode == 0x0009)
-					m_text_buffer.add("    ");
-				else
-					m_text_buffer.add(static_cast<u8>(key->unicode));
+				if ((key->unicode > 0x001F /*escape characters sequence*/ || (key->unicode < 0x007E && key->unicode > 0x00A0)) ||
+					// exceptions  
+					key->unicode == 0x0009 // horizontal tab
+					)
+					// printable characters range
+				{
+					if (key->unicode == 0x0009)
+						m_text_buffer.add("    ");
+					else
+						m_text_buffer.add(static_cast<u8>(key->unicode));
+				}
 			}
-		}
 	}
 
 }
@@ -159,24 +174,28 @@ void TerminalWindow::draw() noexcept
 
 void TerminalWindow::update() noexcept
 {
-	manage_events();
+	
+		manage_events();
 
-	m_window_mouse_pos = static_cast<v2f32>(sf::Mouse::getPosition(m_window));
-
-	if (m_close_button.getGlobalBounds().contains(m_window_mouse_pos))
-		m_close_button.setFillColor(sf::Color{ 140, 7, 7, 255 });
-	else
-		m_close_button.setFillColor(sf::Color::Transparent);
-
-	if (m_drag_window)
+	if (m_window.hasFocus())
 	{
-		auto mouse_pos = sf::Mouse::getPosition();
-		m_window.setPosition(mouse_pos - m_window_offset);
-	}
-	else
-		m_window_offset = sf::Mouse::getPosition() - m_window.getPosition();
+		m_window_mouse_pos = static_cast<v2f32>(sf::Mouse::getPosition(m_window));
 
-	m_display_grid.update();
+		if (m_close_button.getGlobalBounds().contains(m_window_mouse_pos))
+			m_close_button.setFillColor(sf::Color{ 140, 7, 7, 255 });
+		else
+			m_close_button.setFillColor(sf::Color::Transparent);
+
+		if (m_drag_window)
+		{
+			auto mouse_pos = sf::Mouse::getPosition();
+			m_window.setPosition(mouse_pos - m_window_offset);
+		}
+		else
+			m_window_offset = sf::Mouse::getPosition() - m_window.getPosition();
+
+		m_display_grid.update();
+	}
 
 	draw();
 }

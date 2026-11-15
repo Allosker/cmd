@@ -63,6 +63,8 @@ public:
 
 	void add(i8 c) noexcept;
 
+	void add(const std::string& str) noexcept;
+
 	void carriage_return() noexcept;
 
 	void erase() noexcept;
@@ -106,5 +108,4 @@ inline void TextBuffer::add(std::format_string<Types...> fmt, Types&&... args) n
 		if (m_entry_mode)
 			m_buffer += i;
 	}
-	m_change++;
 }

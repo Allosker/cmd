@@ -4,8 +4,8 @@
 /// ==== https://github.com/Allosker/cmd ======
 
 #include "DisplayGrid.hpp"
+#include "CommandExecutioner.hpp"
 #include "TextBuffer.hpp"
-#include "button.hpp"
 #include "sys/utils.hpp"
 
 class TerminalWindow
@@ -37,6 +37,8 @@ private:
 	sf::RectangleShape m_close_button{};
 	sf::RectangleShape m_close_button_tex{};
 	sf::RectangleShape m_border{};
+
+	CommandExecutioner m_commands_executioner{};
 
 	v2i32 m_window_offset{};
 
