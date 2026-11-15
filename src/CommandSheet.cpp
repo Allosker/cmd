@@ -23,6 +23,17 @@ static inline bool get_shutdown_privileges() noexcept
 	if (!win::OpenProcessToken(win::GetCurrentProcess(),
 							   TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
 		return false;
+
+	// Get the LUID for the shutdown privilege
+
+	LookupPrivilegeValue(nullptr, SE_SHUTDOWN_NAME, &tkp.Privileges[0].Luid);
+
+	tkp.PrivilegeCount = 1; // one privilege to set
+	tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+	// Get the shutdown privilege for this process
+
+	win::AdjustTokenPrivileges(hToken, false, &tkp, 0, (win::PTOKEN_PRIVILEGES)nullptr, 0);
 }
 
 namespace cmd
