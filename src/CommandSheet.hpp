@@ -18,6 +18,7 @@ namespace cmd
 	{
 		{ "exit", {} },
 		{ "terminate", {} },
+		{ "cd", {"__str__"} },
 		{ "power", {"sleep", "off", "restart", "hibernate", "restart_wapps"}}
 	};
 

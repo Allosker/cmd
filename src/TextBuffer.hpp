@@ -51,6 +51,7 @@ public:
 
 	void move_cursor(v2i32 offset) noexcept;
 
+	void set_usr_msg(const std::string& msg) noexcept { m_user_msg = msg; }
 	
 	/// <summary>
 	/// Enter the current command
@@ -80,6 +81,8 @@ private:
 
 	std::string m_buffer{};
 
+	std::string m_user_msg{};
+
 	/// <summary>
 	/// Size of the grid in characters
 	/// </summary>
@@ -102,7 +105,7 @@ private:
 template<typename... Types>
 inline void TextBuffer::add(std::format_string<Types...> fmt, Types&&... args) noexcept
 {	
-	for (const auto i : std::format(fmt, std::forward(args)...))
+	for (const auto& i : std::format(fmt, std::forward<Types>(args)...))
 	{
 		add(i);
 		if (m_entry_mode)

@@ -39,8 +39,13 @@ public:
 	std::string run_commands(sf::Window& window) noexcept;
 
 
+	std::string get_cd() const noexcept { return m_cd.string(); };
+
+
 private:
 
 	Command m_command{};
+
+	filepath m_cd{ "C:\\>" };
 
 };

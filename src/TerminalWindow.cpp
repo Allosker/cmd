@@ -28,6 +28,12 @@ TerminalWindow::TerminalWindow() noexcept
 	m_close_button_tex.setTexture(&AssetsManager::get().close_cross);
 
 
+	// Init message
+	m_text_buffer.set_usr_msg(m_commands_executioner.get_cd());
+	m_text_buffer.add("New instance of the Terminal window.\nType: help for a list of all availble commands");
+	m_text_buffer.enter();
+
+
 	/// Round the edges of the window
 
 	HWND hwnd = m_window.getNativeHandle();
@@ -81,6 +87,8 @@ void TerminalWindow::manage_events() noexcept
 							m_text_buffer.add(m_commands_executioner.run_commands(m_window));
 							m_text_buffer.enter();
 						}
+
+						m_text_buffer.set_usr_msg(m_commands_executioner.get_cd());
 					}
 				}
 

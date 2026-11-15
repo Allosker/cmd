@@ -7,8 +7,6 @@
 TextBuffer::TextBuffer()
 	: m_commands{ {} }, m_format{ &m_commands.back() }
 {
-	add("This is a new instance of the terminal, type \"Hello\" to display the first message.");
-	enter();
 }
 
 const std::string TextBuffer::get_terminal_buffer() const noexcept
@@ -84,7 +82,7 @@ void TextBuffer::enter() noexcept
 {
 	if (!m_entry_mode)
 	{
-		add("\n\n~> ");
+		add("\n\n{}", m_user_msg);
 		m_buffer = ""; // clear user input buffer
 	}
 	else
