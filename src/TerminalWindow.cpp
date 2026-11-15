@@ -1,6 +1,8 @@
 #include "TerminalWindow.hpp"
 #include "AssetsManager.hpp"
 
+#include <Windows.h>
+
 TerminalWindow::TerminalWindow() noexcept
 	: m_display_grid{ &m_text_buffer }, m_window
 	{ 
@@ -24,6 +26,15 @@ TerminalWindow::TerminalWindow() noexcept
 		m_close_button.getPosition().x + m_close_button.getSize().x / 2.f - m_close_button_tex.getSize().x / 2.f,
 		m_close_button.getPosition().y + m_close_button.getSize().y / 2.f - m_close_button_tex.getSize().y / 2.f });
 	m_close_button_tex.setTexture(&AssetsManager::get().close_cross);
+
+
+	/// Round the edges of the window
+
+	HWND hwnd = m_window.getNativeHandle();
+
+	HRGN region = CreateRoundRectRgn(0, 0, m_display_grid.get_grid_size().x, m_display_grid.get_grid_size().y + g_size_button.y, 15, 15 );
+
+	SetWindowRgn(hwnd, region, true);
 
 }
 
@@ -53,7 +64,10 @@ void TerminalWindow::manage_events() noexcept
 				if (m_kb_mode & KeyboardMode::Control)
 					m_text_buffer.carriage_return();
 				else
+				// Compute user commands
+				{
 					m_text_buffer.enter();
+				}
 			}
 
 			if (key->scancode == sf::Keyboard::Scancode::Delete ||
@@ -91,10 +105,25 @@ void TerminalWindow::manage_events() noexcept
 
 		if (auto mb = event->getIf<sf::Event::MouseButtonPressed>())
 		{
-			if (m_close_button.getGlobalBounds().contains(m_window_mouse_pos))
+
+			if (mb->button == sf::Mouse::Button::Left)
 			{
-				m_window.close();
+				if (m_border.getGlobalBounds().contains(m_window_mouse_pos))
+					m_drag_window = true;
+
+				if (m_close_button.getGlobalBounds().contains(m_window_mouse_pos))
+				{
+					m_window.close();
+				}
 			}
+
+
+		}
+
+		if (auto mb = event->getIf<sf::Event::MouseButtonReleased>())
+		{
+			if (mb->button == sf::Mouse::Button::Left)
+				m_drag_window = false;
 		}
 
 
@@ -113,13 +142,6 @@ void TerminalWindow::manage_events() noexcept
 			}
 		}
 	}
-
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-	{
-
-	}
-	else
-		m_original_window_pos = m_window.getPosition();
 
 }
 
@@ -146,8 +168,13 @@ void TerminalWindow::update() noexcept
 	else
 		m_close_button.setFillColor(sf::Color::Transparent);
 
-
-	m_window.setPosition(m_window.getPosition() + m_move_offset);
+	if (m_drag_window)
+	{
+		auto mouse_pos = sf::Mouse::getPosition();
+		m_window.setPosition(mouse_pos - m_window_offset);
+	}
+	else
+		m_window_offset = sf::Mouse::getPosition() - m_window.getPosition();
 
 	m_display_grid.update();
 

@@ -38,10 +38,11 @@ private:
 	sf::RectangleShape m_close_button_tex{};
 	sf::RectangleShape m_border{};
 
-	v2i32 m_move_offset{};
-	v2i32 m_original_window_pos{};
+	v2i32 m_window_offset{};
 
 	v2f32 m_window_mouse_pos{};
+
+	bool m_drag_window{};
 
 	enum KeyboardMode
 		: u8
