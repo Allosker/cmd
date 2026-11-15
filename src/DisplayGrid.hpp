@@ -8,6 +8,7 @@
 
 #include "TextBuffer.hpp"
 #include "sys/utils.hpp"
+#include <SFML/Graphics/RenderStates.hpp>
 
 class DisplayGrid
 	: public sf::Drawable
@@ -21,27 +22,14 @@ public:
 
 	v2f32 get_grid_size() const noexcept { return m_grid_size; }
 
+	void move(v2f32 offset) noexcept { m_pos += offset; }
+
 	void update() noexcept;
 
-	void render() const noexcept
-	{
-		m_render_tex.setView(m_view);
+	void render() const noexcept;
 
-		m_render_tex.clear(sf::Color::Blue);
-
-		m_render_tex.draw(m_cursor);
-		m_render_tex.draw(m_text_view);
-
-		m_render_tex.display();
-	}
-
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override
-	{
-		render();
-
-		sf::Sprite sprite{ m_render_tex.getTexture() };
-		target.draw(sprite, states);
-	}
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	
 
 
 /// <summary>
@@ -51,11 +39,15 @@ private:
 
 	mutable sf::RenderTexture m_render_tex{};
 	sf::Text m_text_view;
-	sf::RectangleShape m_cursor{}; 
+	sf::RectangleShape m_cursor{};
 	sf::View m_view;
-	
+
+	mutable sf::Clock m_time;
+
 	v2f32 m_cell_size{};
 	v2f32 m_grid_size{};
+
+	v2f32 m_pos{};
 
 	const TextBuffer* m_text_buffer{ nullptr };
 

@@ -16,6 +16,7 @@ public:
 	}
 
 	sf::Font font;
+	sf::Texture close_cross;
 
 
 private:
@@ -23,6 +24,7 @@ private:
 	AssetsManager() noexcept
 	{
 		font.openFromFile(ASSET_PATH"SpaceMono-Regular.ttf");
+		close_cross.loadFromFile(ASSET_PATH"close_cross.png");
 	}
 
 

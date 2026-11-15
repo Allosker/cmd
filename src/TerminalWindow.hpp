@@ -5,6 +5,7 @@
 
 #include "DisplayGrid.hpp"
 #include "TextBuffer.hpp"
+#include "button.hpp"
 #include "sys/utils.hpp"
 
 class TerminalWindow
@@ -27,10 +28,20 @@ public:
 
 private:
 
+	static constexpr v2f32 g_size_button{ 50.f, 30.f }; // in pixels
+
 	TextBuffer m_text_buffer{};
 	DisplayGrid m_display_grid;
 	sf::RenderWindow m_window;
 
+	sf::RectangleShape m_close_button{};
+	sf::RectangleShape m_close_button_tex{};
+	sf::RectangleShape m_border{};
+
+	v2i32 m_move_offset{};
+	v2i32 m_original_window_pos{};
+
+	v2f32 m_window_mouse_pos{};
 
 	enum KeyboardMode
 		: u8
