@@ -33,6 +33,8 @@ namespace cmd
 	static const std::unordered_set<std::string> g_special_commands
 	{
 		"exit",
+		"ls",
+		"cd"
 	};
 
 
@@ -43,12 +45,25 @@ namespace cmd
 	/// <returns></returns>
 	Output exit(sf::Window& window) noexcept;
 
+	/// <summary>
+	/// The first argument of this function must always be the current Directory
+	/// This function's output must not be discarded for the program's sakes
+	/// </summary>
+	/// <param name="args"></param>
+	/// <returns></returns>
+	[[nodiscard]] Output cd(Args args) noexcept;
+
+	/// <summary>
+	/// The first argument of this function must always be the current Directory
+	/// </summary>
+	/// <param name="args"></param>
+	/// <returns></returns>
+	Output ls(const filepath& cd, Args args) noexcept;
+
 
 	Output power(Args args) noexcept;
 
 	Output terminate(Args args) noexcept;
-
-	Output cd(Args args) noexcept;
 
 	Output help(Args args) noexcept;
 
