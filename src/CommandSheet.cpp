@@ -3,24 +3,25 @@
 #include "sys/utils.hpp"
 
 #include "Application.hpp"
+#include <locale>
+#include <codecvt>
 
 /// <summary>
 /// The Window API
 /// </summary>
-namespace win
-{
-#	include <Windows.h>
-#	include <PowrProf.h>
-} // win
+#include <Windows.h>
+#include <PowrProf.h>
+#include <shlobj_core.h>
+
 
 static inline bool get_shutdown_privileges() noexcept
 {
-	win::HANDLE hToken;
-	win::TOKEN_PRIVILEGES tkp;
+	HANDLE hToken;
+	TOKEN_PRIVILEGES tkp;
 
 	// Get a token for this process
 
-	if (!win::OpenProcessToken(win::GetCurrentProcess(),
+	if (!OpenProcessToken(GetCurrentProcess(),
 							   TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
 		return false;
 
@@ -33,7 +34,7 @@ static inline bool get_shutdown_privileges() noexcept
 
 	// Get the shutdown privilege for this process
 
-	win::AdjustTokenPrivileges(hToken, false, &tkp, 0, (win::PTOKEN_PRIVILEGES)nullptr, 0);
+	AdjustTokenPrivileges(hToken, false, &tkp, 0, (PTOKEN_PRIVILEGES)nullptr, 0);
 }
 
 namespace cmd
@@ -44,27 +45,27 @@ namespace cmd
 
 		if (mode == "sleep")
 		{
-			win::SetSuspendState(false, false, false);
+			SetSuspendState(false, false, false);
 			return "sleep";
 		}
 		else if (mode == "hibernate")
 		{
-			win::SetSuspendState(true, false, false);
+			SetSuspendState(true, false, false);
 			return "hibernate";
 		}
 		else if (mode == "off")
 		{
-			win::ExitWindowsEx(EWX_SHUTDOWN, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
+			ExitWindowsEx(EWX_SHUTDOWN, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
 			return "power off";
 		} 
 		else if (mode == "restart")
 		{
-			win::ExitWindowsEx(EWX_REBOOT, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
+			ExitWindowsEx(EWX_REBOOT, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
 			return "restart";
 		}
 		else if (mode == "restart_wapps")
 		{
-			win::ExitWindowsEx(EWX_RESTARTAPPS, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
+			ExitWindowsEx(EWX_RESTARTAPPS, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
 			return "restart";
 		}
 
@@ -83,9 +84,19 @@ namespace cmd
 		return "Terminating Program";
 	}
 
-	std::string cd(Args args) noexcept
+	std::expected<std::string, std::string> cd(Args args) noexcept
 	{
-		return "Not yet done";
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		std::wstring wstr{ converter.from_bytes(args[0]) };
+
+		const wchar_t* drive = wstr.c_str();
+
+		if (SetCurrentDirectoryW(drive))
+		{
+			return args[0];
+		}
+
+		return std::unexpected{ "Directory " + args[0] + " does not exist." };
 	}
 
 	std::string help(Args args) noexcept

@@ -1,5 +1,6 @@
 #include "CommandExecutioner.hpp"
 
+#include <format>
 #include <unordered_map>
 
 enum TypeOfArg
@@ -88,7 +89,18 @@ std::string CommandExecutioner::run_commands(sf::Window& window) noexcept
 	else if (m_command.name == "exit") ret = cmd::exit(window);
 	else if (m_command.name == "power") ret = cmd::power(m_command.args);
 	else if (m_command.name == "terminate") ret = cmd::terminate();
-	else if (m_command.name == "cd") ret = cmd::cd(m_command.args);
+	else if (m_command.name == "cd")
+	{
+		auto r = cmd::cd(m_command.args);
+
+		if (r)
+		{
+			m_cd = r.value();
+			ret = r.value();
+		}
+		else
+			ret = r.error();
+	}
 
 	m_command = {};
 	return ret;

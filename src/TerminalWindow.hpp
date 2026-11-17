@@ -3,10 +3,14 @@
 // Window for displaying a DisplayGrid as well as managing the events affiliating with it
 /// ==== https://github.com/Allosker/cmd ======
 
-#include "DisplayGrid.hpp"
 #include "CommandExecutioner.hpp"
+#include "DisplayGrid.hpp"
 #include "TextBuffer.hpp"
 #include "sys/utils.hpp"
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+
+#	include <Windows.h>
 
 class TerminalWindow
 {
@@ -43,6 +47,8 @@ private:
 	v2i32 m_window_offset{};
 
 	v2f32 m_window_mouse_pos{};
+
+	HWND m_window_handle;
 
 	bool m_drag_window{};
 

@@ -1,8 +1,6 @@
 #include "TerminalWindow.hpp"
 #include "AssetsManager.hpp"
 
-#include <Windows.h>
-
 TerminalWindow::TerminalWindow() noexcept
 	: m_display_grid{ &m_text_buffer }, m_window
 	{ 
@@ -30,17 +28,17 @@ TerminalWindow::TerminalWindow() noexcept
 
 	// Init message
 	m_text_buffer.set_usr_msg(m_commands_executioner.get_cd());
-	m_text_buffer.add("New instance of the Terminal window.\nType: help for a list of all availble commands");
+	m_text_buffer.add("New instance of the Terminal window.\nType: help for a list of all available commands");
 	m_text_buffer.enter();
 
 
 	/// Round the edges of the window
 
-	HWND hwnd = m_window.getNativeHandle();
+	m_window_handle = HWND(m_window.getNativeHandle());
 
 	HRGN region = CreateRoundRectRgn(0, 0, m_display_grid.get_grid_size().x, m_display_grid.get_grid_size().y + g_size_button.y, 15, 15 );
 
-	SetWindowRgn(hwnd, region, true);
+	SetWindowRgn(m_window_handle, region, true);
 
 	m_window.setFramerateLimit(40);
 }
@@ -84,11 +82,13 @@ void TerminalWindow::manage_events() noexcept
 						}
 						else
 						{
-							m_text_buffer.add(m_commands_executioner.run_commands(m_window));
+							std::string ret = m_commands_executioner.run_commands(m_window);
+							m_text_buffer.set_usr_msg(m_commands_executioner.get_cd());
+							m_text_buffer.add(ret);
 							m_text_buffer.enter();
 						}
 
-						m_text_buffer.set_usr_msg(m_commands_executioner.get_cd());
+						
 					}
 				}
 

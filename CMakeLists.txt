@@ -53,7 +53,10 @@ target_compile_definitions(cmd PRIVATE ASSET_PATH="${ASSET_DIR}")
 set_property(TARGET cmd PROPERTY CXX_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-target_link_libraries(cmd PRIVATE PowrProf)
+target_link_libraries(cmd PRIVATE
+	PowrProf
+	Shell32
+)
 
 # libraries
 

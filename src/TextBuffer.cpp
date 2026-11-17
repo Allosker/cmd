@@ -82,7 +82,7 @@ void TextBuffer::enter() noexcept
 {
 	if (!m_entry_mode)
 	{
-		add("\n\n{}", m_user_msg);
+		add("\n{}", m_user_msg);
 		m_buffer = ""; // clear user input buffer
 	}
 	else

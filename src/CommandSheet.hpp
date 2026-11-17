@@ -8,6 +8,7 @@
 #include <SFML/Window/Window.hpp>
 #include <unordered_map>
 #include <unordered_set>
+#include <expected>
 
 namespace cmd
 {
@@ -35,7 +36,7 @@ namespace cmd
 
 	std::string terminate() noexcept;
 
-	std::string cd(Args args) noexcept;
+	std::expected<std::string, std::string> cd(Args args) noexcept;
 
 	std::string help(Args args) noexcept;
 

@@ -38,14 +38,16 @@ public:
 	/// <returns>The graphical output of all the commands that were run</returns>
 	std::string run_commands(sf::Window& window) noexcept;
 
-
-	std::string get_cd() const noexcept { return m_cd.string(); };
+	/// <summary>
+	/// Get the current Windows' directory as a user-friendly string
+	/// </summary>
+	std::string get_cd() const noexcept { return m_cd.string() + "> "; };
 
 
 private:
 
 	Command m_command{};
 
-	filepath m_cd{ "C:\\>" };
+	filepath m_cd{ "C:\\" };
 
 };
