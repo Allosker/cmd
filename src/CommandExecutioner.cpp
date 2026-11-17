@@ -72,7 +72,7 @@ std::string CommandExecutioner::run_commands(sf::Window& window) noexcept
 	}
 	else if (m_command.name == "cd")
 	{
-		auto output = cmd::cd(m_command.args);
+		auto output = cmd::cd(m_cd, m_command.args);
 		switch (output.type)
 		{
 			case cmd::Output::None:

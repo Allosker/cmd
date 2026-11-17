@@ -50,16 +50,28 @@ namespace cmd
 
 	}
 
-	Output cd(Args args) noexcept
+	Output cd(const filepath& cd, Args args) noexcept
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 		std::wstring wstr{ converter.from_bytes(args[0]) };
 
-		const wchar_t* drive = wstr.c_str();
+		std::wstring path = cd.c_str();
+
+		const wchar_t* drive = nullptr;
+
+		if (args[0].substr(1, 2) == ":\\")
+		{
+			drive = wstr.c_str();
+		}
+		else
+		{
+			path.append(L"\\" + wstr);
+			drive = path.c_str();
+		}
 
 		if (SetCurrentDirectoryW(drive))
 		{
-			return { .msg{args[0]}, .type{Output::None} };
+			return { .msg{args[0]}, .type{Output::None} }; // make it s othat the whole path is returned
 		}
 
 		return { .err{"Directory " + args[0] + " does not exist."}, .type{Output::Error} };

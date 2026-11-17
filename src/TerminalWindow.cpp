@@ -31,7 +31,6 @@ TerminalWindow::TerminalWindow() noexcept
 	m_text_buffer.add("New instance of the Terminal window.\nType: help for a list of all available commands");
 	m_text_buffer.enter();
 
-
 	/// Round the edges of the window
 
 	m_window_handle = HWND(m_window.getNativeHandle());

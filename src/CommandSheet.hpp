@@ -51,7 +51,7 @@ namespace cmd
 	/// </summary>
 	/// <param name="args"></param>
 	/// <returns></returns>
-	[[nodiscard]] Output cd(Args args) noexcept;
+	[[nodiscard]] Output cd(const filepath& cd, Args args) noexcept;
 
 	/// <summary>
 	/// The first argument of this function must always be the current Directory
@@ -78,7 +78,6 @@ namespace cmd
 		std::pair<std::string, std::function<Output(Args)>>
 		{"power", cmd::power},
 		{"terminate", cmd::terminate},
-		{"cd", cmd::cd},
 		{"help", cmd::help}
 
 	};
