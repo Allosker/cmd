@@ -39,52 +39,59 @@ static inline bool get_shutdown_privileges() noexcept
 
 namespace cmd
 {
-	std::string power(Args args) noexcept
+
+	Output exit(sf::Window& window) noexcept
 	{
+		window.close();
+		return { .msg{"Closing Current Session"}, .type{Output::None} };
+
+	}
+
+	Output power(Args args) noexcept
+	{
+		std::string ret;
 		const auto& mode = args[0];
 
 		if (mode == "sleep")
 		{
 			SetSuspendState(false, false, false);
-			return "sleep";
+			ret = "sleep";
 		}
 		else if (mode == "hibernate")
 		{
 			SetSuspendState(true, false, false);
-			return "hibernate";
+			ret = "hibernate";
 		}
 		else if (mode == "off")
 		{
 			ExitWindowsEx(EWX_SHUTDOWN, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
-			return "power off";
-		} 
+			ret = "power off";
+		}
 		else if (mode == "restart")
 		{
 			ExitWindowsEx(EWX_REBOOT, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
-			return "restart";
+			ret = "restart";
 		}
 		else if (mode == "restart_wapps")
 		{
 			ExitWindowsEx(EWX_RESTARTAPPS, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
-			return "restart";
+			ret = "restart";
 		}
+		else
+			return { .err{"\n<## Error: power does not take argument " + mode + " ##>"}, .type{Output::Error} };
 
-		return "";
+		return { .msg{ret}, .type{Output::None} };
 	}
 
-	std::string exit(sf::Window& window) noexcept
-	{
-		window.close();
-		return "Closing Current Session";
-	}
+	
 
-	std::string terminate() noexcept
+	Output terminate(Args args) noexcept
 	{
 		Application::get().stop_program = true;
-		return "Terminating Program";
+		return { .msg{"Terminating Program"}, .type{Output::None} };
 	}
 
-	std::expected<std::string, std::string> cd(Args args) noexcept
+	Output cd(Args args) noexcept
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 		std::wstring wstr{ converter.from_bytes(args[0]) };
@@ -93,15 +100,15 @@ namespace cmd
 
 		if (SetCurrentDirectoryW(drive))
 		{
-			return args[0];
+			return { .msg{args[0]}, .type{Output::None} };
 		}
 
-		return std::unexpected{ "Directory " + args[0] + " does not exist." };
+		return { .msg{"Directory " + args[0] + " does not exist."}, .type{Output::Error} };
 	}
 
-	std::string help(Args args) noexcept
+	Output help(Args args) noexcept
 	{
-		return "Not yet done";
+		return { .msg{"unfinished"}, .type{Output::Warning}};
 	}
 
 

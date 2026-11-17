@@ -9,36 +9,64 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <expected>
+#include <functional>
 
 namespace cmd
 {
-	/// <summary>
-	/// Name of command, parameters
-	/// </summary>
-	static const std::unordered_map<std::string, std::unordered_set<std::string>> g_commands
-	{
-		{ "help", {} },
-		{ "exit", {} },
-		{ "terminate", {} },
-		{ "cd", {"__str__"} },
-		{ "power", {"sleep", "off", "restart", "hibernate", "restart_wapps"}}
-	};
-
 	using Args = const std::vector<std::string>&;
 
-	std::string power(Args args) noexcept;
+	struct Output
+	{
+		std::string err;
+		std::string msg;
+		enum Type
+		{
+			None,
+			Warning,
+			Error
+		} type;
+	};
 
 	/// <summary>
+	/// Special Commands are commands that do not take the "base" set of Arguments, that need to have a special caller
+	/// </summary>
+	static const std::unordered_set<std::string> g_special_commands
+	{
+		"exit",
+	};
+
+
+	/// <summary>
+	/// Cannot throw an error
 	/// </summary>
 	/// <param name="Window">Current Terminal window</param>
 	/// <returns></returns>
-	std::string exit(sf::Window& window) noexcept;
+	Output exit(sf::Window& window) noexcept;
 
-	std::string terminate() noexcept;
 
-	std::expected<std::string, std::string> cd(Args args) noexcept;
+	Output power(Args args) noexcept;
 
-	std::string help(Args args) noexcept;
+	Output terminate(Args args) noexcept;
+
+	Output cd(Args args) noexcept;
+
+	Output help(Args args) noexcept;
+
+
+	
+
+	/// <summary>
+	/// The normal set of commands
+	/// </summary>
+	static const std::unordered_map<std::string, std::function<Output(Args)>> g_commands
+	{
+		std::pair<std::string, std::function<Output(Args)>>
+		{"power", cmd::power},
+		{"terminate", cmd::terminate},
+		{"cd", cmd::cd},
+		{"help", cmd::help}
+
+	};
 
 
 }
