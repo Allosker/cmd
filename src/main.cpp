@@ -45,7 +45,7 @@ BOOL WINAPI Handler(DWORD event)
 struct Worker
 {
 	std::jthread thread;
-	std::shared_ptr<std::atomic<bool>> finished;
+	std::atomic<bool> finished{ false };
 };
 
 int main()
@@ -64,7 +64,7 @@ int main()
 
 	SetConsoleCtrlHandler(Handler, TRUE);
 
-	std::vector<Worker> threads{};
+	std::vector<std::unique_ptr<Worker>> threads{};
 	AssetsManager::get();
 
 	while (!Application::get().stop_program)
@@ -74,21 +74,23 @@ int main()
 			if (msg.message == WM_HOTKEY && msg.wParam == 1)
 			{
 				// Allocate new window
-				auto finished = std::make_shared<std::atomic<bool>>(false);
 
-				threads.emplace_back(Worker{
-					std::jthread([finished](std::stop_token stop)
+				std::unique_ptr<Worker> worker = std::make_unique<Worker>();
+
+				worker->thread = std::jthread{ [w = worker.get()](std::stop_token stop)
 					{
 						run_window(stop);
-						finished->store(true);
-					}), finished
-				});
+						w->finished.store(true);
+					} 
+				};
+
+				threads.emplace_back(std::move(worker));
 			}
 		}
 
 		for (auto it = threads.begin(); it != threads.end();)
 		{
-			if (it->finished->load())
+			if (it->get()->finished.load())
 			{
 				it = threads.erase(it);
 			}
@@ -103,7 +105,7 @@ int main()
 
 	// Clears all the resources and shuts down the application
 	for (auto& worker : threads)
-		worker.thread.request_stop();
+		worker->thread.request_stop();
 	threads.clear();
 
 	UnregisterHotKey(nullptr, 1);

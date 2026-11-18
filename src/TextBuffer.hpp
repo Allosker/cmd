@@ -7,13 +7,14 @@
 /// ==== https://github.com/Allosker/cmd ======
 
 #include "sys/utils.hpp"
+#include <algorithm>
 #include <format>
 #include <string>
 #include <vector>
 
 static inline const std::string get_extra_text(const std::string& text_line, const v2i32& grid_size) noexcept
 {
-	auto delta{ (int)std::abs((double)std::min(0ll, grid_size.x - (long long int)text_line.size())) };
+	auto delta{ std::max(0, static_cast<i32>(text_line.size()) - grid_size.x) };
 
 	if (delta == 0) return "";
 
@@ -51,8 +52,10 @@ public:
 
 	void move_cursor(v2i32 offset) noexcept;
 
+	void cursor_to_writing_position() noexcept;
+
 	void set_usr_msg(const std::string& msg) noexcept { m_user_msg = msg; }
-	
+
 	/// <summary>
 	/// Enter the current command
 	/// </summary>
@@ -104,7 +107,7 @@ private:
 
 template<typename... Types>
 inline void TextBuffer::add(std::format_string<Types...> fmt, Types&&... args) noexcept
-{	
+{
 	for (const auto& i : std::format(fmt, std::forward<Types>(args)...))
 	{
 		add(i);

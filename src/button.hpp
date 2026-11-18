@@ -12,13 +12,7 @@ public:
 
 	bool intersects(v2f32 pos) noexcept
 	{
-		m_on_button = true;
 		return getGlobalBounds().contains(pos);
-	}
-
-	bool is_on_button() noexcept
-	{
-
 	}
 
 	bool is_pressed() const noexcept { return m_pressed; }
@@ -32,6 +26,5 @@ public:
 private:
 
 	bool m_pressed{};
-	bool m_on_button{};
 
 };

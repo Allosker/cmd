@@ -78,6 +78,10 @@ void TextBuffer::move_cursor(v2i32 offset) noexcept
 	m_change++;
 }
 
+void TextBuffer::cursor_to_writing_position() noexcept
+{
+}
+
 void TextBuffer::enter() noexcept
 {
 	if (!m_entry_mode)

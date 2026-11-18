@@ -172,6 +172,7 @@ void TerminalWindow::draw() noexcept
 	m_window.clear();
 
 	m_window.draw(m_border);
+	m_display_grid.render();
 	m_window.draw(m_display_grid);
 	m_window.draw(m_close_button);
 	m_window.draw(m_close_button_tex);

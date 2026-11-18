@@ -26,7 +26,7 @@ public:
 
 	void update() noexcept;
 
-	void render() const noexcept;
+	void render() noexcept;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	
@@ -37,12 +37,12 @@ public:
 /// </summary>
 private:
 
-	mutable sf::RenderTexture m_render_tex{};
+	sf::RenderTexture m_render_tex{};
 	sf::Text m_text_view;
 	sf::RectangleShape m_cursor{};
 	sf::View m_view;
 
-	mutable sf::Clock m_time;
+	sf::Clock m_time;
 
 	v2f32 m_cell_size{};
 	v2f32 m_grid_size{};

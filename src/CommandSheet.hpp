@@ -6,10 +6,8 @@
 
 #include "sys/utils.hpp"
 #include <SFML/Window/Window.hpp>
-#include <unordered_map>
-#include <unordered_set>
-#include <expected>
 #include <functional>
+#include <unordered_map>
 
 namespace cmd
 {
@@ -17,7 +15,6 @@ namespace cmd
 
 	struct Output
 	{
-		std::string err;
 		std::string msg;
 		enum Type
 		{
@@ -27,55 +24,32 @@ namespace cmd
 		} type;
 	};
 
-	/// <summary>
-	/// Special Commands are commands that do not take the "base" set of Arguments, that need to have a special caller
-	/// </summary>
-	static const std::unordered_set<std::string> g_special_commands
-	{
-		"exit",
-		"ls",
-		"cd"
-	};
+
+	Output exit(sf::Window& window, Args args) noexcept;
+
+	[[nodiscard]] Output cd(sf::Window& window, Args args) noexcept;
+
+	Output ls(sf::Window& window, Args args) noexcept;
 
 
-	/// <summary>
-	/// Cannot throw an error
-	/// </summary>
-	/// <param name="Window">Current Terminal window</param>
-	/// <returns></returns>
-	Output exit(sf::Window& window) noexcept;
+	Output power(sf::Window& window, Args args) noexcept;
 
-	/// <summary>
-	/// The first argument of this function must always be the current Directory
-	/// This function's output must not be discarded for the program's sakes
-	/// </summary>
-	/// <param name="args"></param>
-	/// <returns></returns>
-	[[nodiscard]] Output cd(const filepath& cd, Args args) noexcept;
+	Output terminate(sf::Window& window, Args args) noexcept;
 
-	/// <summary>
-	/// The first argument of this function must always be the current Directory
-	/// </summary>
-	/// <param name="args"></param>
-	/// <returns></returns>
-	Output ls(const filepath& cd, Args args) noexcept;
+	Output help(sf::Window& window, Args args) noexcept;
 
 
-	Output power(Args args) noexcept;
 
-	Output terminate(Args args) noexcept;
-
-	Output help(Args args) noexcept;
-
-
-	
 
 	/// <summary>
 	/// The normal set of commands
 	/// </summary>
-	static const std::unordered_map<std::string, std::function<Output(Args)>> g_commands
+	static const std::unordered_map<std::string, std::function<Output(sf::Window&, Args)>> g_commands
 	{
-		std::pair<std::string, std::function<Output(Args)>>
+		std::pair<std::string, std::function<Output(sf::Window&, Args)>>
+		{"exit", cmd::exit},
+		{"cd", cmd::cd},
+		{"ls", cmd::ls},
 		{"power", cmd::power},
 		{"terminate", cmd::terminate},
 		{"help", cmd::help}

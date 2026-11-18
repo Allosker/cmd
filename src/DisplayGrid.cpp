@@ -53,7 +53,7 @@ void DisplayGrid::update() noexcept
 	}
 }
 
-void DisplayGrid::render() const noexcept
+void DisplayGrid::render() noexcept
 {
 	m_render_tex.setView(m_view);
 
@@ -73,8 +73,6 @@ void DisplayGrid::render() const noexcept
 
 void DisplayGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	render();
-
 	sf::Sprite sprite{ m_render_tex.getTexture() };
 	sprite.setPosition(m_pos);
 	target.draw(sprite, states);

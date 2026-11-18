@@ -9,6 +9,9 @@
 #include <string>
 #include "CommandSheet.hpp"
 
+#include "sys/winAPI.hpp"
+
+
 struct Command
 {
 	std::string name{};
@@ -41,13 +44,18 @@ public:
 	/// <summary>
 	/// Get the current Windows' directory as a user-friendly string
 	/// </summary>
-	std::string get_cd() const noexcept { return m_cd.string() + "> "; };
+	std::string get_cd() const noexcept 
+	{ 
+		std::string cwd;
+		get_cwd(cwd);
+		return cwd + "> ";
+	};
 
 
 private:
 
 	Command m_command{};
 
-	filepath m_cd{ "C:\\" };
+	filepath m_cd{ "" };
 
 };
