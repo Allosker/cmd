@@ -65,7 +65,7 @@ int main()
 	SetConsoleCtrlHandler(Handler, TRUE);
 
 	std::vector<std::unique_ptr<Worker>> threads{};
-	AssetsManager::get();
+	AssetsManager::get(); // init the app before any thread
 
 	while (!Application::get().stop_program)
 	{

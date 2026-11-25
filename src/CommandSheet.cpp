@@ -152,11 +152,13 @@ namespace cmd
 		{
 			get_shutdown_privileges();
 			ExitWindowsEx(EWX_SHUTDOWN, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
+			Application::get().stop_program = true;
 			ret = "power off";
 		}
 		else if (mode == "restart")
 		{
 			ExitWindowsEx(EWX_REBOOT, SHTDN_REASON_MAJOR_HARDWARE | SHTDN_REASON_MINOR_MAINTENANCE | SHTDN_REASON_FLAG_PLANNED);
+			Application::get().stop_program = true;
 			ret = "restart";
 		}
 		else if (mode == "restart_wapps")
@@ -181,6 +183,11 @@ namespace cmd
 	Output help(sf::Window& window, Args args) noexcept
 	{
 		return { .msg{"unfinished"}, .type{Output::Warning}};
+	}
+
+	Output save(sf::Window& window, Args args) noexcept
+	{
+		return { .msg{ Application::get().get_root_path().string() }, .type{Output::None}};
 	}
 
 

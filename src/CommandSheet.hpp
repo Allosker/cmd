@@ -38,7 +38,7 @@ namespace cmd
 
 	Output help(sf::Window& window, Args args) noexcept;
 
-
+	Output save(sf::Window& window, Args args) noexcept;
 
 
 	/// <summary>
@@ -52,7 +52,8 @@ namespace cmd
 		{"ls", cmd::ls},
 		{"power", cmd::power},
 		{"terminate", cmd::terminate},
-		{"help", cmd::help}
+		{"help", cmd::help},
+		{"save", cmd::save}
 
 	};
 
