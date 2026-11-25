@@ -187,7 +187,29 @@ namespace cmd
 
 	Output save(sf::Window& window, Args args) noexcept
 	{
-		return { .msg{ Application::get().get_root_path().string() }, .type{Output::None}};
+		Application::get().save_apps();
+		return { .msg{ Application::get().get_save_file_content() }, .type{Output::None}};
+		//return { .msg{ Application::get().get_root_path().string() }, .type{Output::None} };
+	}
+
+	Output launch(sf::Window& window, Args args) noexcept
+	{
+		std::string path = "C:\\Users\\Allosker\\AppData\\Local\\Discord\\Discord.exe";
+
+		STARTUPINFO info{ sizeof(info) };
+		PROCESS_INFORMATION process_info{};
+
+		if (CreateProcess(path.c_str(), nullptr, nullptr, nullptr, true, 0, nullptr, nullptr, &info, &process_info))
+		{
+			WaitForSingleObject(process_info.hProcess, INFINITE);
+			CloseHandle(process_info.hProcess);
+			CloseHandle(process_info.hThread);
+		}
+		else
+			return { .msg{ "<# Error: Couldn't launch app correctly #>" }, .type{Output::Error} };
+
+
+		return { .msg{ "Successfully Launched Discord"}, .type{Output::None}};
 	}
 
 

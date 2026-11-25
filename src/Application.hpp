@@ -5,10 +5,11 @@
 
 #include "sys/utils.hpp"
 #include <atomic>
-#include <string>
-#include <unordered_map>
 #include <mutex>
 #include <shared_mutex>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
 class Application
 {
@@ -32,8 +33,12 @@ public:
 	{
 		std::shared_lock lock{ mutex };
 
-		return root_path; 
+		return root_path;
 	}
+
+	bool save_apps() noexcept;
+
+	std::string get_save_file_content() noexcept;
 
 
 private:
@@ -48,5 +53,7 @@ private:
 	filepath root_path{};
 
 	mutable std::shared_mutex mutex;
+
+	inline static const std::string g_data_file{ "\\data.txt" };
 
 };

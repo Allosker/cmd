@@ -40,6 +40,8 @@ namespace cmd
 
 	Output save(sf::Window& window, Args args) noexcept;
 
+	Output launch(sf::Window& window, Args args) noexcept;
+
 
 	/// <summary>
 	/// The normal set of commands
@@ -53,8 +55,8 @@ namespace cmd
 		{"power", cmd::power},
 		{"terminate", cmd::terminate},
 		{"help", cmd::help},
-		{"save", cmd::save}
-
+		{"save", cmd::save},
+		{"launch", cmd::launch}
 	};
 
 
